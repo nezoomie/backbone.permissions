@@ -38,6 +38,36 @@
       return _.intersection(rights, this.getRights()).length !== rights.length;
     },
 
+		secureRoles: function() {
+			var _this = this,
+					securedMethods = {};
+					
+			_(this.roles).each(function(permissions, right) {
+				var methods = {
+					allow: permissions.allow ? _(permissions.allow.split(' ')).compact() : [],
+					deny: permissions.deny ? _(permissions.deny.split(' ')).compact() : []
+				};
+				console.log('the methods for '+right, methods);
+				_(methods).each(function(rightGroup, action) {
+						if (action=='extend') return;
+						_(rightGroup).each(function(method) {
+							securedMethods[method] = securedMethods[method] || {};
+							securedMethods[method][action] = securedMethods[method][action] || [];
+							securedMethods[method][action].push(right);
+						});
+				});
+			});
+			
+			_(securedMethods).each(function(rightGroup, method) {
+				_(rightGroup).each(function(rights, action) {
+					console.log(rights);
+					securedMethods[method][action] = _(rights).chain().uniq().compact().value();	
+				});
+			});
+			
+			console.log('secured roles', securedMethods);
+		},
+
     secureMethods: function() {
       var _this = this;
       _(this.securedMethods).each(function(permissions,method) {

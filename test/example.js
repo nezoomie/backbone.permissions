@@ -18,6 +18,22 @@ $(document).ready(function() {
     _.extend({}, Backbone.Permissions, {
       el: '#globalApp',
 
+	  roles: {
+		  'can_read': {
+			  allow: "read"
+		  },
+		  
+		  'can_write': {
+			  allow: 'read write',
+			  deny: 'bar'
+		  },
+		  
+		  'can_admin': {
+			  extend: 'can_write', 
+			  allow: 'bar read write'
+		  }
+	  },
+
       securedMethods: {
         'read': {
           allow: 'read write'
@@ -43,6 +59,7 @@ $(document).ready(function() {
 
       initialize: function() {
         this.secureMethods();
+        this.secureRoles();		
         this.$el.append('<h3>Global View, authorizes globally: '+this.getRights().join(', ')+'</h3>');
         this.$el.append('<small>Can read?: '+this.can('read')+'</small><br/>');
         this.$el.append('<small>Can read and write?: '+this.can('read write')+'</small><br/>');
