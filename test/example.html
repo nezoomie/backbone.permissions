@@ -14,6 +14,14 @@
             margin: 10px;
         }
     </style>
+    <script id="viewTemplate" type="text/html">
+        <h3>Demo View: <%- getRights().join(', ') %></h3>
+        <small>Can read?: <%- can('can_read') %></small><br/>
+        <small>Can write?: <%- can('can_write') %></small><br/>
+        <small>Can swing?: <%- can('can_swing') %></small><br/>
+        <small>Can read and swag?: <%- can('can_read can_swag') %></small><br/>
+        <small>Cannot swag?: <%- cannot('can_swag') %></small><br/>
+    </script>
 </head>
 <body>
 <div class="test-view" id="globalApp"></div>

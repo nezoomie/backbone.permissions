@@ -21,7 +21,7 @@ $(document).ready(function() {
     return realUser.get('rights').split(' ');
   };
 
-  var AppView = Backbone.View.extend(
+  var DemoView = Backbone.View.extend(
     _.extend({}, Backbone.Permissions, {
       el: '#globalApp',
 			
@@ -42,23 +42,22 @@ $(document).ready(function() {
 					allow: 'foo'
 				}
 		  },
-			
+
       initialize: function() {
         this.initRights();
-        this.$el.append('<h3>Global View, authorizes globally: '+this.getRights().join(', ')+'</h3>');
-        this.$el.append('<small>Can read?: '+this.can('can_read')+'</small><br/>');
-        this.$el.append('<small>Can write?: '+this.can('can_write')+'</small><br/>');
-        this.$el.append('<small>Can swing?: '+this.can('can_swing')+'</small><br/>');				
-        this.$el.append('<small>Can read and swag?: '+this.can('can_read can_swag')+'</small><br/>');
-        this.$el.append('<small>Cannot swag?: '+this.cannot('can_swag')+'</small><br/>');
+      },
+
+      render: function() {
+        this.$el.html('');
+        this.$el.append(_.template($('#viewTemplate').text(), this));
       },
 
       onAuthorized: function(method) {
-        this.$el.append('<p style="color:green;">'+realUser.get('name')+' can call '+method+'.</p>');
+        this.$el.append('<p style="color:green;">'+realUser.get('name')+' can call '+method+'('+this.cid+').</p>');
       },
 
       onUnauthorized: function(method) {
-        this.$el.append('<p style="color:red;">'+realUser.get('name')+' cannot call '+method+'.</p>');
+        this.$el.append('<p style="color:red;">'+realUser.get('name')+' cannot call '+method+'('+this.cid+').</p>');
       },
 
       read: function() {
@@ -83,10 +82,29 @@ $(document).ready(function() {
     })
   );
 
-  var appView = new AppView();
+  var LocalDemoView = DemoView.extend({
+      el: '#localApp',
+
+      getRights: function() {
+        return ['can_read'];
+      }
+    }
+  );
+
+  var appView = new DemoView();
+  appView.render();
   appView.read();
   appView.write();
   appView.swing();
   appView.bar();
   appView.foo();
+
+  var localView = new LocalDemoView();
+  console.log(localView);
+  localView.render();
+  localView.read();
+  localView.write();
+  localView.swing();
+  localView.bar();
+  localView.foo();
 });
