@@ -18,22 +18,6 @@ $(document).ready(function() {
     _.extend({}, Backbone.Permissions, {
       el: '#globalApp',
 
-		  roles: {
-			  'can_read': {
-				  allow: "read"
-			  },
-		  
-			  'can_write': {
-				  allow: 'read write only_can_write',
-				  deny: 'bar'
-			  },
-		  
-			  'can_admin': {
-				  extend: 'can_write', 
-				  allow: 'read write'
-			  }
-		  },
-
       securedMethods: {
         'read': {
           allow: 'read write'
@@ -59,7 +43,6 @@ $(document).ready(function() {
 
       initialize: function() {
         this.secureMethods();
-        this.secureRoles();		
         this.$el.append('<h3>Global View, authorizes globally: '+this.getRights().join(', ')+'</h3>');
         this.$el.append('<small>Can read?: '+this.can('read')+'</small><br/>');
         this.$el.append('<small>Can read and write?: '+this.can('read write')+'</small><br/>');
@@ -101,31 +84,52 @@ $(document).ready(function() {
     _.extend({}, Backbone.Permissions, {
       el: '#localApp',
 
+		  rightsMap: {
+			  'can_read': {
+				  allow: "read"
+			  },
+		  
+			  'can_write': {
+					extend: 'can_read',
+				  allow: 'write'
+			  },
+		  
+			  'can_swing': {
+				  extend: 'can_write', 
+				  allow: 'swing'
+			  },
+				
+				'can_foo': {},
+				
+				'can_bar': {}
+		  },
+
       securedMethods: {
         'read': {
-          allow: 'read write'
+          allow: 'can_read can_write'
         },
 
         'write': {
-          allow: 'write'
+          allow: 'can_write'
         },
 
         'swing': {
-          allow: 'swing'
+          allow: 'can_swing'
         },
 
         'bar': {
-          allow: 'bar',
-          deny: 'foo'
+          allow: 'can_bar',
+          deny: 'can_foo'
         },
 
         'foo': {
-          deny: 'bar'
+          deny: 'can_bar'
         }
       },
 
       initialize: function() {
-        this.secureMethods();
+				this.initRights();
+        // this.secureMethods();
         this.$el.append('<h3>Local View, authorizes locally: '+this.getRights().join(', ')+'</h3>');
         this.$el.append('<small>Can read?: '+this.can('read')+'</small><br/>');
         this.$el.append('<small>Can read and write?: '+this.can('read write')+'</small><br/>');

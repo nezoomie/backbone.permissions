@@ -38,31 +38,46 @@
       return _.intersection(rights, this.getRights()).length !== rights.length;
     },
 
-		secureRoles: function() {
+		initRights: function() {
 			var _this = this,
-					securedMethods = {};
-					
-			_(this.roles).each(function(permissions, right) {
-				var methods = {
-							allow: permissions.allow ? _(permissions.allow.split(' ')).compact() : [],
-							deny: permissions.deny ? _(permissions.deny.split(' ')).compact() : []
+					securedMethods = {},
+					extendRights = function(rights,baseRight) {
+						basePermissions = _this.rightsMap[baseRight];
+						
+						if (!basePermissions) throw new Error('No mappings specified for right "'+baseRight+'"');
+						if (basePermissions.extend) {
+							basePermissions = extendRights(basePermissions, basePermissions.extend);
+						}
+
+						console.log('allow',basePermissions)
+						var baseAllow = _(basePermissions.allow).isString()
+							? _(basePermissions.allow.split(' ')).compact()
+							: _(basePermissions.allow).compact();
+						return {
+							allow: _(rights.allow).chain()
+							.union(baseAllow)
+							.uniq()
+							.value()
+						} 						
+					};
+
+			_(this.rightsMap).each(function(permissions, right) {
+				var rights = {
+							allow: permissions.allow ? _(permissions.allow.split(' ')).compact() : []
 						},
 						baseRight = permissions.extend;
 				
 				if (baseRight) {
-					basePermissions = _this.roles[baseRight];
-					methods.allow = _(methods.allow).chain()
-						.union(basePermissions.allow ? _(basePermissions.allow.split(' ')).compact() : [])
-						.uniq()
-						.value();
-					methods.deny = _(methods.deny).chain()
-						.union(basePermissions.deny ? _(basePermissions.deny.split(' ')).compact() : [])
-						.uniq()
-						.value();
+					rights = extendRights(rights, baseRight)
+					// basePermissions = _this.rightsMap[baseRight];
+					// if (!basePermissions) throw new Error('No mappings specified for right "'+baseRight+'"');
+					// rights.allow = _(rights.allow).chain()
+					// 	.union(basePermissions.allow ? _(basePermissions.allow.split(' ')).compact() : [])
+					// 	.uniq()
+					// 	.value();
 				}
 				
-				console.log('the methods for '+right, methods);
-				_(methods).each(function(rightGroup, action) {
+				_(rights).each(function(rightGroup, action) {
 						if (action=='extend') return;
 						_(rightGroup).each(function(method) {
 							securedMethods[method] = securedMethods[method] || {};
