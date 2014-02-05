@@ -40,14 +40,14 @@ $(document).ready(function() {
 				
 				'can_foo': {
 					allow: 'foo'
-				},
+				}
 		  },
 			
       initialize: function() {
         this.initRights();
         this.$el.append('<h3>Global View, authorizes globally: '+this.getRights().join(', ')+'</h3>');
         this.$el.append('<small>Can read?: '+this.can('can_read')+'</small><br/>');
-        this.$el.append('<small>Can read and write?: '+this.can('can_read can_write')+'</small><br/>');
+        this.$el.append('<small>Can write?: '+this.can('can_write')+'</small><br/>');
         this.$el.append('<small>Can swing?: '+this.can('can_swing')+'</small><br/>');				
         this.$el.append('<small>Can read and swag?: '+this.can('can_read can_swag')+'</small><br/>');
         this.$el.append('<small>Cannot swag?: '+this.cannot('can_swag')+'</small><br/>');
@@ -84,7 +84,6 @@ $(document).ready(function() {
   );
 
   var appView = new AppView();
-  console.log(appView);
   appView.read();
   appView.write();
   appView.swing();

@@ -30,18 +30,34 @@
       return _(array.split(' ')).chain().uniq().compact().value();
     },
 
+    _getAllRights: function() {
+      var _this = this,
+          userRights = this.getRights(),
+          rightsArray = [],
+          retrieveRights = function(right) {
+            rightsArray.push(right);
+            linkedRights = _this.hierarchy[right] ? _this._parseArrayString(_this.hierarchy[right]) : [];
+            _(linkedRights).each(function(linkedRight) {
+              retrieveRights(linkedRight);
+            });
+          };
+
+      _(userRights).each(retrieveRights);
+
+      return _(rightsArray).compact();
+    },
+
     can: function(rights) {
       rights = this._parseArrayString(rights);
-      return _.intersection(rights, this.getRights()).length === rights.length;
+      return _.intersection(rights, this._getAllRights()).length === rights.length;
     },
 
     cannot: function(rights) {
       rights = this._parseArrayString(rights);
-      return _.intersection(rights, this.getRights()).length !== rights.length;
+      return _.intersection(rights, this._getAllRights()).length !== rights.length;
     },
 
 		initRights: function() {
-			console.log('hierarchy:',this.hierarchy);
 			var _this = this,
 					securedMethods = {},
 					extendRights = function(rightName,rights,baseRights) {
@@ -51,10 +67,8 @@
 								};
 						
 						_(rightsToMixin).each(function(mixinRight) {
-              console.log('mixinRight', mixinRight);
 							basePermissions = _this.rightsMap[mixinRight];
 							if (!basePermissions) throw new Error('No mappings specified for right "'+mixinRight+'"');
-							console.log('basePermission', rightName, basePermissions);
 							if (_this.hierarchy[mixinRight]) {
 								basePermissions = extendRights(mixinRight, basePermissions, _this.hierarchy[mixinRight]);
 							}
@@ -96,12 +110,11 @@
 			
 			_(securedMethods).each(function(rightGroup, method) {
 				_(rightGroup).each(function(rights, action) {
-					console.log(rights);
 					securedMethods[method][action] = _(rights).chain().uniq().compact().value();	
 				});
 			});
 			
-			console.log('secured roles', securedMethods);
+//			console.log('secured roles', securedMethods);
 			this.securedMethods = securedMethods;
 			this._secureMethods();
 		},
