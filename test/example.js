@@ -2,7 +2,7 @@ $(document).ready(function() {
 
   var User = Backbone.Model.extend({
     defaults: {
-      rights: 'read write swing swang'
+      rights: 'can_swing'
     }
   });
 
@@ -17,73 +17,7 @@ $(document).ready(function() {
   var AppView = Backbone.View.extend(
     _.extend({}, Backbone.Permissions, {
       el: '#globalApp',
-
-      securedMethods: {
-        'read': {
-          allow: 'read write'
-        },
-
-        'write': {
-          allow: 'write'
-        },
-
-        'swing': {
-          allow: 'swing'
-        },
-
-        'bar': {
-          allow: 'bar',
-          deny: 'foo'
-        },
-
-        'foo': {
-          deny: 'bar'
-        }
-      },
-
-      initialize: function() {
-        this.secureMethods();
-        this.$el.append('<h3>Global View, authorizes globally: '+this.getRights().join(', ')+'</h3>');
-        this.$el.append('<small>Can read?: '+this.can('read')+'</small><br/>');
-        this.$el.append('<small>Can read and write?: '+this.can('read write')+'</small><br/>');
-        this.$el.append('<small>Can read and swag?: '+this.can('read swag')+'</small><br/>');
-        this.$el.append('<small>Cannot swag?: '+this.cannot('swag')+'</small><br/>');
-      },
-
-      onAuthorized: function(method) {
-        this.$el.append('<p style="color:green;">'+realUser.get('name')+' can call '+method+'.</p>');
-      },
-
-      onUnauthorized: function(method) {
-        this.$el.append('<p style="color:red;">'+realUser.get('name')+' cannot call '+method+'.</p>');
-      },
-
-      read: function() {
-        this.$el.append('<p>Call read.</p>');
-      },
-
-      write: function() {
-        this.$el.append('<p>Call write.</p>');
-      },
-
-      swing: function() {
-        this.$el.append('<p>Call swing.</p>');
-      },
-
-      bar: function() {
-        this.$el.append('<p>Call bar.</p>');
-      },
-
-      foo: function() {
-        this.$el.append('<p>(unprotected) Call foo.</p>');
-      }
-    })
-  );
-
-  var LocalView = Backbone.View.extend(
-    _.extend({}, Backbone.Permissions, {
-      el: '#localApp',
-
+			
 		  rightsMap: {
 			  'can_read': {
 				  allow: "read"
@@ -99,47 +33,20 @@ $(document).ready(function() {
 				  allow: 'swing'
 			  },
 				
-				'can_foo': {},
-				
-				'can_bar': {}
+				'can_foo': {
+					extend: 'can_read can_swing',
+					allow: 'foo'
+				},
 		  },
-
-      securedMethods: {
-        'read': {
-          allow: 'can_read can_write'
-        },
-
-        'write': {
-          allow: 'can_write'
-        },
-
-        'swing': {
-          allow: 'can_swing'
-        },
-
-        'bar': {
-          allow: 'can_bar',
-          deny: 'can_foo'
-        },
-
-        'foo': {
-          deny: 'can_bar'
-        }
-      },
-
+			
       initialize: function() {
-				this.initRights();
-        // this.secureMethods();
-        this.$el.append('<h3>Local View, authorizes locally: '+this.getRights().join(', ')+'</h3>');
-        this.$el.append('<small>Can read?: '+this.can('read')+'</small><br/>');
-        this.$el.append('<small>Can read and write?: '+this.can('read write')+'</small><br/>');
-        this.$el.append('<small>Can read and swag?: '+this.can('read swag')+'</small><br/>');
-        this.$el.append('<small>Cannot swag?: '+this.cannot('swag')+'</small><br/>');
-        this.$el.append('<small>Cannot swag and write?: '+this.cannot('swag')+'</small><br/>');
-      },
-
-      getRights: function() {
-        return ['read', 'foo'];
+        this.initRights();
+        this.$el.append('<h3>Global View, authorizes globally: '+this.getRights().join(', ')+'</h3>');
+        this.$el.append('<small>Can read?: '+this.can('can_read')+'</small><br/>');
+        this.$el.append('<small>Can read and write?: '+this.can('can_read can_write')+'</small><br/>');
+        this.$el.append('<small>Can swing?: '+this.can('can_swing')+'</small><br/>');				
+        this.$el.append('<small>Can read and swag?: '+this.can('can_read can_swag')+'</small><br/>');
+        this.$el.append('<small>Cannot swag?: '+this.cannot('can_swag')+'</small><br/>');
       },
 
       onAuthorized: function(method) {
@@ -163,11 +70,11 @@ $(document).ready(function() {
       },
 
       bar: function() {
-        this.$el.append('<p>Call bar.</p>');
+        this.$el.append('<p>(unprotected) Call bar.</p>');
       },
 
       foo: function() {
-        this.$el.append('<p>(unprotected) Call foo.</p>');
+        this.$el.append('<p>Call foo.</p>');
       }
     })
   );
@@ -179,12 +86,4 @@ $(document).ready(function() {
   appView.swing();
   appView.bar();
   appView.foo();
-
-  var localView = new LocalView();
-  console.log(localView);
-  localView.read();
-  localView.write();
-  localView.swing();
-  localView.bar();
-  localView.foo();
 });
