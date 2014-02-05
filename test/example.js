@@ -10,7 +10,14 @@ $(document).ready(function() {
     name: 'Real User'
   });
 
-  Backbone._getRights = function() {
+	Backbone.Permissions.hierarchy = {
+		'can_read': '',
+		'can_write': 'can_read',
+		'can_swing': 'can_write',
+		'can_foo': 'can_read can_swing'
+	};
+
+  Backbone.Permissions.getRights = function() {
     return realUser.get('rights').split(' ');
   };
 
@@ -24,17 +31,14 @@ $(document).ready(function() {
 			  },
 		  
 			  'can_write': {
-					extend: 'can_read',
 				  allow: 'write'
 			  },
 		  
 			  'can_swing': {
-				  extend: 'can_write', 
 				  allow: 'swing'
 			  },
 				
 				'can_foo': {
-					extend: 'can_read can_swing',
 					allow: 'foo'
 				},
 		  },

@@ -6,8 +6,8 @@
 ( function(Backbone, _) {
 
   var __getRights__ = Backbone._getRights = function() {
-    return [];
-  };
+		    return [];
+		  };
 
   var Permissions = Backbone.Permissions = function() {};
 
@@ -24,6 +24,8 @@
       return Backbone._getRights.apply(this, arguments);
     },
 
+		hierarchy: {},
+
     _parseArrayString: function(array) {
       return _(array.split(' ')).chain().uniq().compact().value();
     },
@@ -39,20 +41,22 @@
     },
 
 		initRights: function() {
+			console.log('hierarchy:',this.hierarchy);
 			var _this = this,
 					securedMethods = {},
-					extendRights = function(rights,baseRight) {
-						var mixinRights = _(baseRight.split(' ')).compact(),
-								mixedRights = {
+					extendRights = function(rightName,rights,baseRights) {
+						var rightsToMixin = _this._parseArrayString(baseRights),
+                mixedRights = {
 									allow: rights.allow
 								};
 						
-						_(mixinRights).each(function(mixinRight) {
+						_(rightsToMixin).each(function(mixinRight) {
+              console.log('mixinRight', mixinRight);
 							basePermissions = _this.rightsMap[mixinRight];
-						
 							if (!basePermissions) throw new Error('No mappings specified for right "'+mixinRight+'"');
-							if (basePermissions.extend) {
-								basePermissions = extendRights(basePermissions, basePermissions.extend);
+							console.log('basePermission', rightName, basePermissions);
+							if (_this.hierarchy[mixinRight]) {
+								basePermissions = extendRights(mixinRight, basePermissions, _this.hierarchy[mixinRight]);
 							}
 
 							var baseAllow = _(basePermissions.allow).isString()
@@ -74,10 +78,10 @@
 				var rights = {
 							allow: permissions.allow ? _(permissions.allow.split(' ')).compact() : []
 						},
-						baseRight = permissions.extend;
+						baseRights = _this.hierarchy[right] ? _this.hierarchy[right] : null;
 				
-				if (baseRight) {
-					rights = extendRights(rights, baseRight)
+				if (baseRights) {
+					rights = extendRights(right, rights, baseRights);
 				}
 				
 				_(rights).each(function(rightGroup, action) {
@@ -99,10 +103,10 @@
 			
 			console.log('secured roles', securedMethods);
 			this.securedMethods = securedMethods;
-			this.secureMethods();
+			this._secureMethods();
 		},
 
-    secureMethods: function() {
+    _secureMethods: function() {
       var _this = this;
       _(this.securedMethods).each(function(permissions,method) {
         if (!_this[method] || !_.isFunction(_this[method])) return;
@@ -111,8 +115,6 @@
             userRights = _this.getRights(),
             allowedRights = permissions.allow,
             authorized = ( _.isEmpty(allowedRights) || !( _.isEmpty(_.intersection(userRights,allowedRights)) ) );
-            // authorized = ( _.isEmpty(deniedRights) || _.isEmpty(_.intersection(userRights,deniedRights)) )
-            //   && ( _.isEmpty(allowedRights) || !( _.isEmpty(_.intersection(userRights,allowedRights)) ) );
 
           if (authorized) {
             this.onAuthorized.apply(_this,_([method,funcArgs]).flatten());
