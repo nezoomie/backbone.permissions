@@ -44,9 +44,23 @@
 					
 			_(this.roles).each(function(permissions, right) {
 				var methods = {
-					allow: permissions.allow ? _(permissions.allow.split(' ')).compact() : [],
-					deny: permissions.deny ? _(permissions.deny.split(' ')).compact() : []
-				};
+							allow: permissions.allow ? _(permissions.allow.split(' ')).compact() : [],
+							deny: permissions.deny ? _(permissions.deny.split(' ')).compact() : []
+						},
+						baseRight = permissions.extend;
+				
+				if (baseRight) {
+					basePermissions = _this.roles[baseRight];
+					methods.allow = _(methods.allow).chain()
+						.union(basePermissions.allow ? _(basePermissions.allow.split(' ')).compact() : [])
+						.uniq()
+						.value();
+					methods.deny = _(methods.deny).chain()
+						.union(basePermissions.deny ? _(basePermissions.deny.split(' ')).compact() : [])
+						.uniq()
+						.value();
+				}
+				
 				console.log('the methods for '+right, methods);
 				_(methods).each(function(rightGroup, action) {
 						if (action=='extend') return;

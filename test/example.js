@@ -18,21 +18,21 @@ $(document).ready(function() {
     _.extend({}, Backbone.Permissions, {
       el: '#globalApp',
 
-	  roles: {
-		  'can_read': {
-			  allow: "read"
-		  },
+		  roles: {
+			  'can_read': {
+				  allow: "read"
+			  },
 		  
-		  'can_write': {
-			  allow: 'read write',
-			  deny: 'bar'
-		  },
+			  'can_write': {
+				  allow: 'read write only_can_write',
+				  deny: 'bar'
+			  },
 		  
-		  'can_admin': {
-			  extend: 'can_write', 
-			  allow: 'bar read write'
-		  }
-	  },
+			  'can_admin': {
+				  extend: 'can_write', 
+				  allow: 'read write'
+			  }
+		  },
 
       securedMethods: {
         'read': {
