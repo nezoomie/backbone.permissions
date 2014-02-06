@@ -21,66 +21,66 @@ $(document).ready(function() {
     return realUser.get('rights').split(' ');
   };
 
-  var DemoView = Backbone.View.extend(
-    _.extend({}, Backbone.Permissions, {
-      el: '#globalApp',
-			
-		  rightsMap: {
-			  'can_read': {
-				  allow: "read"
-			  },
-		  
-			  'can_write': {
-				  allow: 'write'
-			  },
-		  
-			  'can_swing': {
-				  allow: 'swing'
-			  },
-				
-				'can_foo': {
-					allow: 'foo'
-				}
-		  },
+  var DemoView = Backbone.View.extend({
+    el: '#globalApp',
 
-      initialize: function() {
-        this.initRights();
-      },
+    permissions: {
+      map: {
+        'can_read': {
+          allow: "read"
+        },
 
-      render: function() {
-        this.$el.html('');
-        this.$el.append(_.template($('#viewTemplate').text(), this));
-      },
+        'can_write': {
+          allow: 'write'
+        },
 
-      onAuthorized: function(method) {
-        this.$el.append('<p style="color:green;">'+realUser.get('name')+' can call '+method+'('+this.cid+').</p>');
-      },
+        'can_swing': {
+          allow: 'swing'
+        },
 
-      onUnauthorized: function(method) {
-        this.$el.append('<p style="color:red;">'+realUser.get('name')+' cannot call '+method+'('+this.cid+').</p>');
-      },
-
-      read: function() {
-        this.$el.append('<p>Call read.</p>');
-      },
-
-      write: function() {
-        this.$el.append('<p>Call write.</p>');
-      },
-
-      swing: function() {
-        this.$el.append('<p>Call swing.</p>');
-      },
-
-      bar: function() {
-        this.$el.append('<p>(unprotected) Call bar.</p>');
-      },
-
-      foo: function() {
-        this.$el.append('<p>Call foo.</p>');
+        'can_foo': {
+          allow: 'foo'
+        }
       }
-    })
-  );
+    },
+
+    initialize: function() {
+      Backbone.Permissions.add(this);
+    },
+
+    render: function() {
+      this.$el.html('');
+      this.$el.append(_.template($('#viewTemplate').text(), this));
+    },
+
+    onAuthorized: function(method) {
+      this.$el.append('<p style="color:green;">'+realUser.get('name')+' can call '+method+'('+this.cid+').</p>');
+    },
+
+    onUnauthorized: function(method) {
+      this.$el.append('<p style="color:red;">'+realUser.get('name')+' cannot call '+method+'('+this.cid+').</p>');
+    },
+
+    read: function() {
+      this.$el.append('<p>Call read.</p>');
+    },
+
+    write: function() {
+      this.$el.append('<p>Call write.</p>');
+    },
+
+    swing: function() {
+      this.$el.append('<p>Call swing.</p>');
+    },
+
+    bar: function() {
+      this.$el.append('<p>(unprotected) Call bar.</p>');
+    },
+
+    foo: function() {
+      this.$el.append('<p>Call foo.</p>');
+    }
+  });
 
   var LocalDemoView = DemoView.extend({
       el: '#localApp',
@@ -92,6 +92,7 @@ $(document).ready(function() {
   );
 
   var appView = new DemoView();
+  console.log('appView',appView.getRights(),appView);
   appView.render();
   appView.read();
   appView.write();
@@ -100,11 +101,11 @@ $(document).ready(function() {
   appView.foo();
 
   var localView = new LocalDemoView();
-  console.log(localView);
   localView.render();
   localView.read();
   localView.write();
   localView.swing();
   localView.bar();
   localView.foo();
+console.log('localView',localView.getRights(),localView);
 });
