@@ -1,0 +1,23 @@
+{
+  "name": "backbone.permissions",
+  "main": "backbone.permissions.js",
+  "version": "0.5",
+  "homepage": "https://github.com/nezoomie/backbone.permissions",
+  "authors": [
+    "nezoomie <giuseppe.sorce@kreuzwerker.de>"
+  ],
+  "description": "Rights management for Backbone objects.",
+  "keywords": [
+    "js",
+    "rights",
+    "roles"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
