@@ -75,7 +75,7 @@ A more realistic example:
 
 ## Define the rights map:
 
-Given the previous controller example, let's secure the methods `entityCreate` and `entityEdit` for the users with `can_write` access. We also want to secure `adminIndex` for admin users with `can_administrate` rights:
+Given the previous controller example, let's secure the methods `entityCreate` and `entityEdit` for the users with `can_write` access. We also want to secure `adminIndex` for admin users with `can_administer` rights:
 
 	var controller = {
 		permissions: {
@@ -84,7 +84,7 @@ Given the previous controller example, let's secure the methods `entityCreate` a
 					allow: 'entityCreate entityEdit'
 				},
 				
-				'can_administrate': {
+				'can_administer': {
 					allow: 'adminIndex'
 				}
 			}
@@ -105,7 +105,7 @@ Now `entityCreate`, `entityEdit` and `adminIndex` are available only if the resp
 
 ## Rights Hierarchy
 
-With the current configuration our `can_administrate` right doesn't allow the access to any editorial method. To achieve this we can specify all the additional methods:
+With the current configuration our `can_administer` right doesn't allow the access to any editorial method. To achieve this we can specify all the additional methods:
 
 	var controller = {
 		permissions: {
@@ -114,7 +114,7 @@ With the current configuration our `can_administrate` right doesn't allow the ac
 					allow: 'entityCreate entityEdit'
 				},
 				
-				'can_administrate': {
+				'can_administer': {
 					// Not really DRY...
 					allow: 'adminIndex entityCreate entityEdit'
 				}
@@ -129,7 +129,7 @@ or we could specify this right as an extension of `can_write`, using `permission
 	var controller = {
 		permissions: {
 			hierarchy: {
-				'can_administrate'  :  'can_write'
+				'can_administer'  :  'can_write'
 			},
 			
 			map: {
@@ -137,7 +137,7 @@ or we could specify this right as an extension of `can_write`, using `permission
 					allow: 'entityCreate entityEdit'
 				},
 				
-				'can_administrate': {
+				'can_administer': {
 					allow: 'adminIndex'
 				}
 			}
@@ -146,14 +146,14 @@ or we could specify this right as an extension of `can_write`, using `permission
 		// methods
 	}
 
-`can_administrate` now grants access to every method available for `can_write`.
+`can_administer` now grants access to every method available for `can_write`.
 One right can extend one or more from other rights:
 
 	var controller = {
 		permissions: {
 			hierarchy: {
-				'can_administrate'  :   'can_write',
-				'can_edit_admin'    :   'can_administrate',
+				'can_administer'  :   'can_write',
+				'can_edit_admin'    :   'can_administer',
 				'can_edit_all'      :   'can_edit_admin can_configure'
 			},
 			
@@ -162,7 +162,7 @@ One right can extend one or more from other rights:
 					allow: 'entityCreate entityEdit'
 				},
 				
-				'can_administrate': {
+				'can_administer': {
 					allow: 'adminIndex'
 				},
 				
@@ -185,8 +185,8 @@ Usually you may want to share this hierarchy between all your objects. To do thi
 
 
 	Backbone.Permissions.hierarchy = {
-		'can_administrate'  :   'can_write',
-		'can_edit_admin'    :   'can_administrate',
+		'can_administer'  :   'can_write',
+		'can_edit_admin'    :   'can_administer',
 		'can_edit_all'      :   'can_edit_admin can_configure'
 	};
 	
@@ -243,7 +243,7 @@ When an object extends Permissions it get two methods, `can` and `cannot`, which
 	this.can('can_read can_swing');
 	// Returns true if current rights include BOTH 'can_read' AND 'can_swing' 
 	
-These methods can be useful for templates when some parts of the UI needs to adapt to specific rights. Keep in mind that those methods fully check through the hierarchy:
+These methods can be useful for templates when some parts of the UI need to adapt to specific rights. Keep in mind that those methods check deeply through the hierarchy:
 
 	Backbone.Permissions.hierarchy = {
 		'can_swing'  :   'can_read'
