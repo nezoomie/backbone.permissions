@@ -1,5 +1,5 @@
 /*
- * Backbone.Permissions, v0.5
+ * Backbone.Permissions, v0.5.1
  * Copyright (c)2014 Giuseppe Sorce
  * Distributed under MIT license
  */
