@@ -93,7 +93,7 @@
         if (!_this[method] || !_.isFunction(_this[method])) return;
         _this[method] = _(_this[method]).wrap(function(func) {
           var funcArgs = _.rest(Array.prototype.slice.call(arguments)),
-            userRights = _this.getRights(),
+            userRights = _this._getAllRights(),
             allowedRights = permissions.allow,
             authorized = ( _.isEmpty(allowedRights) || !( _.isEmpty(_.intersection(userRights,allowedRights)) ) );
 

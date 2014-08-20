@@ -1,7 +1,7 @@
 {
   "name": "backbone.permissions",
   "main": "backbone.permissions.js",
-  "version": "0.5",
+  "version": "0.51",
   "homepage": "https://github.com/nezoomie/backbone.permissions",
   "authors": [
     "nezoomie <giuseppe.sorce@kreuzwerker.de>"
