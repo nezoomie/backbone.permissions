@@ -1,5 +1,5 @@
 /*
- * Backbone.Permissions, v0.5.1
+ * Backbone.Permissions, v0.5.2
  * Copyright (c)2014 Giuseppe Sorce
  * Distributed under MIT license
  */
@@ -114,8 +114,8 @@
         };
 
       _(rightsToMixin).each(function(mixinRight) {
-        basePermissions = entity.permissions.map[mixinRight];
-        if (!basePermissions) throw new Error('No mappings specified for right "'+mixinRight+'"');
+        basePermissions = entity.permissions.map[mixinRight] || {};
+
         if (entity.permissions.hierarchy[mixinRight]) {
           basePermissions = _extendRights(mixinRight, basePermissions, entity.permissions.hierarchy[mixinRight]);
         }
